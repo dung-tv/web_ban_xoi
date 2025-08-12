@@ -211,8 +211,8 @@ export default function OrderPage() {
           </div>
 
           <div className="field">
-            <label>Thêm chi tiết</label>
-            <input value={sdt} onChange={e => setThongTinThem(e.target.value)} />
+            <label>Thông tin thêm</label>
+            <input value={thongTinThem} onChange={e => setThongTinThem(e.target.value)} />
           </div>
 
           <div className="field">
