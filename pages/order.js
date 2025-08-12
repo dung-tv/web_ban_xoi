@@ -16,7 +16,7 @@ export default function OrderPage() {
   const [toppings, setToppings] = useState([]) // array of {name, price}
   const [selectedToppings, setSelectedToppings] = useState([])
   const [tenKhach, setTenKhach] = useState('')
-  const [sdt, setSdt] = useState('')
+  const [thongTinThem, setThongTinThem] = useState('')
   const [soLuong, setSoLuong] = useState(1)
   const [submitting, setSubmitting] = useState(false)
 
@@ -77,8 +77,8 @@ export default function OrderPage() {
 
   async function handleSubmit(e) {
     e.preventDefault()
-    if (!tenKhach || !sdt) {
-      alert('Vui lòng nhập tên và số điện thoại')
+    if (!tenKhach) {
+      alert('Vui lòng nhập tên')
       return
     }
     if (!product) {
@@ -94,7 +94,7 @@ export default function OrderPage() {
 
     const payload = {
       ten_khach: tenKhach,
-      sdt,
+      thong_tin_them: thongTinThem,
       san_pham: product.ten_san_pham,
       gia_chon: Number(selectedPrice),
       toppings: selectedToppings,
@@ -211,8 +211,8 @@ export default function OrderPage() {
           </div>
 
           <div className="field">
-            <label>Số điện thoại</label>
-            <input value={sdt} onChange={e => setSdt(e.target.value)} />
+            <label>Thêm chi tiết</label>
+            <input value={sdt} onChange={e => setThongTinThem(e.target.value)} />
           </div>
 
           <div className="field">
