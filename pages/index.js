@@ -1,74 +1,69 @@
+// pages/index.js
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
-export default function Home() {
+export default function ProductsPage() {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
+  const [err, setErr] = useState(null)
 
   useEffect(() => {
-    fetch('/api/products')
-      .then(r => r.json())
-      .then(data => {
+    async function load() {
+      try {
+        const res = await fetch('/api/products')
+        if (!res.ok) throw new Error('Failed to load products')
+        const data = await res.json()
         setProducts(data || [])
-      })
-      .catch(err => console.error(err))
-      .finally(() => setLoading(false))
-  }, [])
-
-  const orderProduct = async (product) => {
-    const ten_khach = prompt('Nhập tên khách:')
-    if (!ten_khach) return
-    const sdt = prompt('Nhập số điện thoại:')
-    if (!sdt) return
-    const so_luong = parseInt(prompt('Số lượng:'), 10) || 1
-
-    const payload = {
-      ten_khach,
-      sdt,
-      san_pham: product.ten_san_pham || product.ten_sanpham || product.name,
-      so_luong,
-      tong_tien: (Number(product.gia) || 0) * so_luong
-    }
-
-    try {
-      const res = await fetch('/api/order', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      })
-      const json = await res.json()
-      if (res.ok) {
-        alert('Đặt hàng thành công!')
-      } else {
-        console.error(json)
-        alert('Lỗi khi gửi đơn hàng')
+      } catch (e) {
+        console.error(e)
+        setErr(e.message || 'Lỗi')
+      } finally {
+        setLoading(false)
       }
-    } catch (err) {
-      console.error(err)
-      alert('Lỗi kết nối')
     }
-  }
+    load()
+  }, [])
 
   return (
     <div className="container">
-      <h1>Quán Xôi - Demo</h1>
-      {loading ? <p>Đang tải...</p> : null}
+      <h1>Danh sách xôi</h1>
+
+      {loading && <p>Đang tải sản phẩm...</p>}
+      {err && <p style={{ color: 'red' }}>Lỗi: {err}</p>}
+
       <div className="grid">
-        {products.length === 0 && !loading && <p>Không có sản phẩm.</p>}
-        {products.map((p, idx) => (
-          <div key={idx} className="card">
-            <img src={p.hinh_anh || p.image || ''} alt={p.ten_san_pham} />
+        {products.map(p => (
+          <div className="card" key={p.id}>
+            <img src={p.hinh_anh || ''} alt={p.ten_san_pham} />
             <h3>{p.ten_san_pham}</h3>
-            <p>Giá: {p.gia} đ</p>
-            <button onClick={() => orderProduct(p)}>Đặt mua</button>
+            <p className="desc">{p.mo_ta}</p>
+
+            <div className="prices">
+              <span className="price">10k</span>
+              <span className="price">15k</span>
+              <span className="price">20k</span>
+            </div>
+
+            <Link
+              href={{
+                pathname: `/order?id${p.id}`,
+              }}
+            >
+              <a className="btn">Đặt mua</a>
+            </Link>
           </div>
         ))}
       </div>
+
       <style jsx>{`
-        .container { max-width: 900px; margin: 24px auto; padding: 0 16px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 16px; }
-        .card { border: 1px solid #eee; padding: 12px; border-radius: 8px; text-align: center; }
-        img { width: 100%; height: 140px; object-fit: cover; border-radius: 6px; }
-        button { margin-top: 8px; padding: 8px 12px; cursor: pointer; }
+        .container { max-width: 1000px; margin: 24px auto; padding: 0 16px; font-family: system-ui, sans-serif; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-top: 16px; }
+        .card { border: 1px solid #eee; padding: 12px; border-radius: 8px; text-align: center; background: #fff; }
+        img { width: 100%; height: 150px; object-fit: cover; border-radius: 6px; }
+        .desc { font-size: 0.9rem; color: #555; height: 40px; overflow: hidden; margin: 8px 0; }
+        .prices { display:flex; gap:8px; justify-content:center; margin-bottom:8px; }
+        .price { padding:4px 8px; border-radius:4px; background:#f3f3f3; font-weight:600; }
+        .btn { display:inline-block; margin-top:6px; padding:8px 12px; background:#ff8a00; color:#fff; border-radius:6px; text-decoration:none; }
       `}</style>
     </div>
   )
