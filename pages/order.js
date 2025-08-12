@@ -212,7 +212,7 @@ export default function OrderPage() {
 
           <div className="field">
             <label>Số điện thoại</label>
-            <input value={sdt} onChange={e => setSdt(e.target.value)} required />
+            <input value={sdt} onChange={e => setSdt(e.target.value)} />
           </div>
 
           <div className="field">

@@ -45,9 +45,7 @@ export default function ProductsPage() {
             </div>
 
             <Link
-              href={{
-                pathname: `/order?id${p.id}`,
-              }}
+              href={`/order?id${p.id}`}
             >
               <a className="btn">Đặt mua</a>
             </Link>
